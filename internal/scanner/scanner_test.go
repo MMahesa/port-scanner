@@ -46,16 +46,26 @@ func TestRunScansPorts(t *testing.T) {
 
 	openPort := listener.Addr().(*net.TCPAddr).Port
 	closedPort := openPort + 1
+	progressCalls := 0
 
 	results := Run(context.Background(), Config{
 		Host:        "127.0.0.1",
 		Ports:       []int{openPort, closedPort},
 		Timeout:     300 * time.Millisecond,
 		Concurrency: 2,
+		OnProgress: func(done, total int) {
+			progressCalls++
+			if total != 2 {
+				t.Fatalf("expected total 2, got %d", total)
+			}
+		},
 	})
 
 	if len(results) != 2 {
 		t.Fatalf("expected 2 results, got %d", len(results))
+	}
+	if progressCalls != 2 {
+		t.Fatalf("expected progress callback twice, got %d", progressCalls)
 	}
 	if !results[0].Open {
 		t.Fatalf("expected port %d to be open", openPort)

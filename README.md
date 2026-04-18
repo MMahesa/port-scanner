@@ -43,6 +43,7 @@ go build -o port-scanner ./cmd/port-scanner
 - Opsi menyimpan hasil ke file
 - Opsi untuk menampilkan hanya port yang terbuka
 - Banner grabbing sederhana pada port yang merespons
+- Progress indicator saat scan dijalankan di terminal
 - Ringkasan hasil pemindaian
 - Pengujian dasar untuk parser dan proses scan
 

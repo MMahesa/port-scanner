@@ -40,6 +40,14 @@ func main() {
 		Timeout:     *timeout,
 		Concurrency: *concurrency,
 	}
+	if strings.EqualFold(strings.TrimSpace(*format), "table") && strings.TrimSpace(*output) == "" {
+		cfg.OnProgress = func(done, total int) {
+			fmt.Fprintf(os.Stderr, "\rMemindai port: %d/%d", done, total)
+			if done == total {
+				fmt.Fprintln(os.Stderr)
+			}
+		}
+	}
 
 	results := scanner.Run(context.Background(), cfg)
 	if *onlyOpen {

@@ -19,6 +19,7 @@ type Config struct {
 	Ports       []int
 	Timeout     time.Duration
 	Concurrency int
+	OnProgress  func(done, total int)
 }
 
 type Result struct {
@@ -102,6 +103,9 @@ func Run(ctx context.Context, cfg Config) []Result {
 	}
 
 	results := make([]Result, len(cfg.Ports))
+	total := len(cfg.Ports)
+	var progress sync.Mutex
+	done := 0
 	type job struct {
 		index int
 		port  int
@@ -116,6 +120,12 @@ func Run(ctx context.Context, cfg Config) []Result {
 			defer wg.Done()
 			for job := range jobs {
 				results[job.index] = scanPort(ctx, cfg.Host, job.port, cfg.Timeout)
+				if cfg.OnProgress != nil {
+					progress.Lock()
+					done++
+					cfg.OnProgress(done, total)
+					progress.Unlock()
+				}
 			}
 		}()
 	}

@@ -70,3 +70,20 @@ func TestRunScansPorts(t *testing.T) {
 		t.Fatalf("expected detail for closed port, got %q", results[1].Detail)
 	}
 }
+
+func TestResultsToCSV(t *testing.T) {
+	data, err := ResultsToCSV([]Result{
+		{Port: 22, Open: true, Latency: 12 * time.Millisecond, Detail: "banner received", Banner: "SSH-2.0-test"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	text := string(data)
+	if !strings.Contains(text, "port,status,latency,detail,banner") {
+		t.Fatalf("expected csv header, got %q", text)
+	}
+	if !strings.Contains(text, "22,open,12ms,banner received,SSH-2.0-test") {
+		t.Fatalf("expected csv row, got %q", text)
+	}
+}

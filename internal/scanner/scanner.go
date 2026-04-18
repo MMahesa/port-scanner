@@ -2,7 +2,9 @@ package scanner
 
 import (
 	"bufio"
+	"bytes"
 	"context"
+	"encoding/csv"
 	"fmt"
 	"net"
 	"slices"
@@ -163,6 +165,35 @@ func BuildSummary(results []Result) Summary {
 		}
 	}
 	return summary
+}
+
+func ResultsToCSV(results []Result) ([]byte, error) {
+	var buffer bytes.Buffer
+	writer := csv.NewWriter(&buffer)
+
+	if err := writer.Write([]string{"port", "status", "latency", "detail", "banner"}); err != nil {
+		return nil, err
+	}
+
+	for _, result := range results {
+		status := "closed"
+		if result.Open {
+			status = "open"
+		}
+		record := []string{
+			strconv.Itoa(result.Port),
+			status,
+			result.Latency.Round(time.Millisecond).String(),
+			result.Detail,
+			result.Banner,
+		}
+		if err := writer.Write(record); err != nil {
+			return nil, err
+		}
+	}
+
+	writer.Flush()
+	return buffer.Bytes(), writer.Error()
 }
 
 func scanPort(ctx context.Context, host string, port int, timeout time.Duration) Result {

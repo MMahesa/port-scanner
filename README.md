@@ -39,7 +39,7 @@ go build -o port-scanner ./cmd/port-scanner
 
 - Mendukung port tunggal dan range port
 - Pemindaian paralel dengan jumlah worker yang dapat diatur
-- Output `table` dan `json`
+- Output `table`, `json`, dan `csv`
 - Opsi menyimpan hasil ke file
 - Opsi untuk menampilkan hanya port yang terbuka
 - Banner grabbing sederhana pada port yang merespons
@@ -58,7 +58,7 @@ go run ./cmd/port-scanner --host 127.0.0.1 --ports 22,80,443,8000-8100
 - `--ports` daftar port, contoh `22,80,443,8000-8100`
 - `--timeout` timeout koneksi per port
 - `--concurrency` jumlah worker paralel
-- `--format` `table` atau `json`
+- `--format` `table`, `json`, atau `csv`
 - `--output` simpan hasil ke file
 - `--open-only` hanya menampilkan port terbuka
 
@@ -80,6 +80,12 @@ Simpan hasil ke file:
 
 ```bash
 go run ./cmd/port-scanner --host 127.0.0.1 --ports 22-30 --format json --output results.json
+```
+
+Output CSV:
+
+```bash
+go run ./cmd/port-scanner --host 127.0.0.1 --ports 22-30 --format csv
 ```
 
 Tampilkan hanya port terbuka:

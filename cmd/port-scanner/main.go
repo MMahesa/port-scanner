@@ -18,7 +18,7 @@ func main() {
 	ports := flag.String("ports", "22,80,443", "daftar port, contoh: 22,80,443,8000-8100")
 	timeout := flag.Duration("timeout", 800*time.Millisecond, "timeout koneksi per port")
 	concurrency := flag.Int("concurrency", 200, "jumlah worker untuk scan paralel")
-	format := flag.String("format", "table", "format output: table atau json")
+	format := flag.String("format", "table", "format output: table, json, atau csv")
 	output := flag.String("output", "", "simpan hasil ke file")
 	onlyOpen := flag.Bool("open-only", false, "tampilkan hanya port yang terbuka")
 	flag.Parse()
@@ -63,6 +63,21 @@ func main() {
 		encoder := json.NewEncoder(writer)
 		encoder.SetIndent("", "  ")
 		if err := encoder.Encode(payload); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	case "csv":
+		data, err := scanner.ResultsToCSV(results)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		if *output == "" {
+			_, err = os.Stdout.Write(data)
+		} else {
+			err = os.WriteFile(*output, data, 0o644)
+		}
+		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}

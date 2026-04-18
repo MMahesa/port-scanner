@@ -14,7 +14,7 @@ CLI berbasis Go untuk melakukan pemindaian port TCP pada host tertentu.
 
 ## Ringkasan
 
-`port-scanner` dibuat untuk kebutuhan pemindaian port TCP dengan cara yang sederhana, cepat, dan mudah dijalankan langsung dari terminal. Tool ini mendukung daftar port tunggal maupun range port, pemindaian paralel, serta output yang bisa dibaca langsung atau disimpan ke file.
+`port-scanner` dibuat untuk kebutuhan pemindaian port TCP dengan cara yang sederhana, cepat, dan mudah dijalankan langsung dari terminal. Tool ini mendukung daftar port tunggal maupun range port, pemindaian paralel, serta output yang bisa dibaca langsung atau disimpan ke file. Hasil scan diurutkan agar port terbuka tampil lebih dulu, dan pada port tertentu tool ini mencoba membaca banner awal jika tersedia.
 
 ## Persyaratan
 
@@ -42,6 +42,7 @@ go build -o port-scanner ./cmd/port-scanner
 - Output `table` dan `json`
 - Opsi menyimpan hasil ke file
 - Opsi untuk menampilkan hanya port yang terbuka
+- Banner grabbing sederhana pada port yang merespons
 - Ringkasan hasil pemindaian
 - Pengujian dasar untuk parser dan proses scan
 

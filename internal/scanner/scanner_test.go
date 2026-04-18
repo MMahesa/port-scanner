@@ -35,6 +35,15 @@ func TestRunScansPorts(t *testing.T) {
 	}
 	defer listener.Close()
 
+	go func() {
+		conn, err := listener.Accept()
+		if err != nil {
+			return
+		}
+		defer conn.Close()
+		_, _ = conn.Write([]byte("SSH-2.0-test-server\r\n"))
+	}()
+
 	openPort := listener.Addr().(*net.TCPAddr).Port
 	closedPort := openPort + 1
 
@@ -50,6 +59,9 @@ func TestRunScansPorts(t *testing.T) {
 	}
 	if !results[0].Open {
 		t.Fatalf("expected port %d to be open", openPort)
+	}
+	if !strings.Contains(results[0].Banner, "SSH-2.0-test-server") {
+		t.Fatalf("expected banner on open port, got %q", results[0].Banner)
 	}
 	if results[1].Open {
 		t.Fatalf("expected port %d to be closed", closedPort)

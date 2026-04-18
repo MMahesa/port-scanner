@@ -83,17 +83,18 @@ func renderTable(host string, results []scanner.Result) string {
 	summary := scanner.BuildSummary(results)
 	var builder strings.Builder
 	fmt.Fprintf(&builder, "Target: %s\n", host)
-	fmt.Fprintf(&builder, "%-8s %-8s %-12s %s\n", "PORT", "STATUS", "LATENCY", "DETAIL")
+	fmt.Fprintf(&builder, "%-8s %-8s %-12s %-16s %s\n", "PORT", "STATUS", "LATENCY", "DETAIL", "BANNER")
 	for _, result := range results {
 		status := "closed"
 		if result.Open {
 			status = "open"
 		}
-		fmt.Fprintf(&builder, "%-8d %-8s %-12s %s\n",
+		fmt.Fprintf(&builder, "%-8d %-8s %-12s %-16s %s\n",
 			result.Port,
 			status,
 			result.Latency.Round(time.Millisecond),
 			result.Detail,
+			result.Banner,
 		)
 	}
 	fmt.Fprintln(&builder)

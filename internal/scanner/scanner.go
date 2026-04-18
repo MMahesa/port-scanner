@@ -1,6 +1,7 @@
 package scanner
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"net"
@@ -22,6 +23,7 @@ type Result struct {
 	Port    int           `json:"port"`
 	Open    bool          `json:"open"`
 	Latency time.Duration `json:"latency"`
+	Banner  string        `json:"banner,omitempty"`
 	Detail  string        `json:"detail"`
 }
 
@@ -121,6 +123,23 @@ func Run(ctx context.Context, cfg Config) []Result {
 	}
 	close(jobs)
 	wg.Wait()
+
+	slices.SortFunc(results, func(left, right Result) int {
+		if left.Open != right.Open {
+			if left.Open {
+				return -1
+			}
+			return 1
+		}
+		if left.Port < right.Port {
+			return -1
+		}
+		if left.Port > right.Port {
+			return 1
+		}
+		return 0
+	})
+
 	return results
 }
 
@@ -160,13 +179,20 @@ func scanPort(ctx context.Context, host string, port int, timeout time.Duration)
 			Detail:  simplifyError(err),
 		}
 	}
-	_ = conn.Close()
+	defer conn.Close()
+
+	banner := grabBanner(conn, port, timeout)
+	detail := "connection established"
+	if banner != "" {
+		detail = "banner received"
+	}
 
 	return Result{
 		Port:    port,
 		Open:    true,
 		Latency: time.Since(start),
-		Detail:  "connection established",
+		Banner:  banner,
+		Detail:  detail,
 	}
 }
 
@@ -190,4 +216,25 @@ func simplifyError(err error) string {
 		return "timeout"
 	}
 	return text
+}
+
+func grabBanner(conn net.Conn, port int, timeout time.Duration) string {
+	_ = conn.SetDeadline(time.Now().Add(timeout))
+
+	switch port {
+	case 80, 8080, 8000, 8008, 8888:
+		_, _ = conn.Write([]byte("HEAD / HTTP/1.0\r\nHost: localhost\r\n\r\n"))
+	case 25, 110, 143:
+	}
+
+	reader := bufio.NewReader(conn)
+	line, err := reader.ReadString('\n')
+	if err != nil {
+		return ""
+	}
+	line = strings.TrimSpace(line)
+	if len(line) > 120 {
+		line = line[:120]
+	}
+	return line
 }

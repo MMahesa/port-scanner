@@ -86,3 +86,19 @@ Tampilkan hanya port terbuka:
 ```bash
 go run ./cmd/port-scanner --host 127.0.0.1 --ports 1-1024 --open-only
 ```
+
+## Contoh Output
+
+```text
+Target: scanme.nmap.org
+PORT     STATUS   LATENCY      DETAIL
+22       open     369ms        connection established
+80       open     369ms        connection established
+443      closed   369ms        connection refused
+
+Ringkasan: total=3 terbuka=2 tertutup=1
+```
+
+## Terminal Snapshot
+
+![Terminal output](./assets/terminal-output.png)

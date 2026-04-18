@@ -1,0 +1,8 @@
+$ go run ./cmd/port-scanner --host scanme.nmap.org --ports 22,80,443
+Target: scanme.nmap.org
+PORT     STATUS   LATENCY      DETAIL
+22       open     369ms        connection established
+80       open     369ms        connection established
+443      closed   369ms        connection refused
+
+Ringkasan: total=3 terbuka=2 tertutup=1

@@ -16,6 +16,25 @@ CLI berbasis Go untuk melakukan pemindaian port TCP pada host tertentu.
 
 `port-scanner` dibuat untuk kebutuhan pemindaian port TCP dengan cara yang sederhana, cepat, dan mudah dijalankan langsung dari terminal. Tool ini mendukung daftar port tunggal maupun range port, pemindaian paralel, serta output yang bisa dibaca langsung atau disimpan ke file.
 
+## Persyaratan
+
+- Go 1.24 atau versi yang lebih baru
+
+## Instalasi
+
+Jalankan langsung dari source:
+
+```bash
+go run ./cmd/port-scanner --host 127.0.0.1 --ports 22,80,443
+```
+
+Atau build menjadi binary:
+
+```bash
+go build -o port-scanner ./cmd/port-scanner
+./port-scanner --host 127.0.0.1 --ports 22,80,443
+```
+
 ## Fitur
 
 - Mendukung port tunggal dan range port
